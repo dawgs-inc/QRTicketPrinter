@@ -38,10 +38,10 @@ public class Auth
 
     public async void RequestSignIn()
     {
-        string endpoint = "";
-        string email = "";
-        string password = "";
-        string appVersion = "";
+        string endpoint = Common.tomlRoot.Get<string>("endpoint");
+        string email = Common.tomlRoot.Get<string>("mail");
+        string password = Common.tomlRoot.Get<string>("password");
+        string appVersion = Common.tomlRoot.Get<string>("version");
 
         RequestResult getCsrfTokenRet = await Task.Run<RequestResult>(() =>
         {

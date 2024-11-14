@@ -3,9 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using Nett;
 
 public static class Common
 {
+    /// <summary>
+    /// 設定ファイルのオブジェクト
+    /// </summary>
+    /// <value></value>
+    public static TomlTable tomlRoot {get; private set;} = Toml.ReadFile(Constants.TOML_FILE_PATH);
+
     /// <summary>
     /// <para>呼び出し元のクラス名、 メソッド名をログ出力</para>
     /// <para>引数を付けた場合は、引数の中身を文字列として出力</para>
