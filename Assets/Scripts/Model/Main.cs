@@ -9,4 +9,20 @@ public class Main : MonoBehaviour
         Auth auth = new Auth();
         auth.RequestSignIn();
     }
+
+    public void OnClickButton()
+    {
+        PrintRequest pr = new();
+        pr.Print(Constants.TICKET_PATH, 3, ret =>
+        {
+            if (ret.isValid)
+            {
+                Common.Log("succeed!");
+            }
+            else
+            {
+                Common.Log("faild!");
+            }
+        });
+    }
 }
