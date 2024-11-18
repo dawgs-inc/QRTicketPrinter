@@ -4,6 +4,8 @@ public class SessionManager : MonoBehaviour
 {
     [SerializeField]
     private PrintNumView printNumView;
+    [SerializeField]
+    private GameObject resultView;
 
     void Awake()
     {
@@ -40,11 +42,26 @@ public class SessionManager : MonoBehaviour
             if (ret.isValid)
             {
                 Common.Log("succeed!");
+                Invoke("PrintSucceeded", 2);
             }
             else
             {
                 Common.Log("faild!");
             }
         });
+    }
+
+    private void PrintSucceeded()
+    {
+        this.GetComponent<FadeTransition>().StartFadeTransition(resultView);
+    }
+
+    /// ResultView Events
+    public void OnClickEndButton()
+    {
+        Common.Log();
+
+        PrintNumCounter.Reset();
+        printNumView.SetPrintNumText(PrintNumCounter.GetPrintNum());
     }
 }
