@@ -6,20 +6,4 @@ public class Main : MonoBehaviour
     {
         Common.Log();
     }
-
-    public void OnClickButton()
-    {
-        PrintRequest pr = new();
-        pr.Print(Constants.TICKET_PATH, 3, ret =>
-        {
-            if (ret.isValid)
-            {
-                Common.Log("succeed!");
-            }
-            else
-            {
-                Common.Log("faild!");
-            }
-        });
-    }
 }

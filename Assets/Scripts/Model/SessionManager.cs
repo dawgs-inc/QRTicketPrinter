@@ -33,5 +33,18 @@ public class SessionManager : MonoBehaviour
     public void OnClickOKButton()
     {
         Common.Log();
+
+        PrintRequest pr = new();
+        pr.Print(Constants.TICKET_PATH, PrintNumCounter.GetPrintNum(), ret =>
+        {
+            if (ret.isValid)
+            {
+                Common.Log("succeed!");
+            }
+            else
+            {
+                Common.Log("faild!");
+            }
+        });
     }
 }
