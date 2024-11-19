@@ -8,10 +8,10 @@ public class PrintRequest
     public void Print(string imgPath, int printNum, Action<RequestResult> callback)
     {
         var ret = new RequestResult();
+        Image img = Image.FromFile(imgPath);
 
         try
         {
-            Image img = Image.FromFile(imgPath);
 
             System.Drawing.Printing.PrintDocument printDocument = new();
             printDocument.PrintPage += (sender, e) =>
@@ -69,6 +69,7 @@ public class PrintRequest
             ret.message = ex.Message;
         }
 
+        img.Dispose();
         callback.Invoke(ret);
     }
 

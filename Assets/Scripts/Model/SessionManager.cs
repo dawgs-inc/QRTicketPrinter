@@ -32,12 +32,17 @@ public class SessionManager : MonoBehaviour
         printNumView.SetPrintNumText(PrintNumCounter.GetPrintNum());
     }
 
-    public void OnClickOKButton()
+    public async void OnClickOKButton()
     {
         Common.Log();
 
+        string qrFilePath = Constants.QR_DIR_PATH + "/12345_qr.png";
+        string ticketFilePath = Constants.TICKET_DIR_PATH + "/12345_ticket.png";
+
+        await TicketComposer.Compose(qrFilePath, ticketFilePath);
+    
         PrintRequest pr = new();
-        pr.Print(Constants.TICKET_PATH, PrintNumCounter.GetPrintNum(), ret =>
+        pr.Print(ticketFilePath, PrintNumCounter.GetPrintNum(), ret =>
         {
             if (ret.isValid)
             {
@@ -63,5 +68,8 @@ public class SessionManager : MonoBehaviour
 
         PrintNumCounter.Reset();
         printNumView.SetPrintNumText(PrintNumCounter.GetPrintNum());
+
+        // Common.ClearFolder(Constants.QR_DIR_PATH);
+        Common.ClearFolder(Constants.TICKET_DIR_PATH);
     }
 }

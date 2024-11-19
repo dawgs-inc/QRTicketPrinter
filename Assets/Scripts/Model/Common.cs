@@ -1,6 +1,5 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
+using System.IO;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using Nett;
@@ -43,5 +42,40 @@ public static class Common
 
         Debug.Log($"*** [ {className} ] {methodName}() {msg} ***");
         // Debug.Log($"*** {msg} ***");
+    }
+
+    /// <summary>
+    /// 指定されたフォルダ内のすべてのファイルとサブフォルダを削除します。
+    /// </summary>
+    /// <param name="folderPath">削除対象のフォルダのパス。</param>
+    public static void ClearFolder(string folderPath)
+    {
+        try
+        {
+            if (!Directory.Exists(folderPath))
+            {
+                return;
+            }
+
+            // フォルダ内のすべてのファイルを削除
+            string[] files = Directory.GetFiles(folderPath);
+            foreach (string file in files)
+            {
+                File.Delete(file);
+                Common.Log($"delete file : {file}");
+            }
+
+            // フォルダ内のすべてのサブフォルダを削除
+            string[] directories = Directory.GetDirectories(folderPath);
+            foreach (string directory in directories)
+            {
+                Directory.Delete(directory, true); // サブフォルダとその中身を再帰的に削除
+                Common.Log($"delete dir : {directory}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Common.Log($"error: {ex.Message}");
+        }
     }
 }
