@@ -1,17 +1,20 @@
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class SessionManager : MonoBehaviour
 {
     [SerializeField]
     private PrintNumView printNumView;
+
     [SerializeField]
     private GameObject resultView;
+    private Auth auth;
 
     void Awake()
     {
         Common.Log();
 
-        Auth auth = new();
+        auth = new();
         auth.RequestSignIn();
     }
 
@@ -36,11 +39,22 @@ public class SessionManager : MonoBehaviour
     {
         Common.Log();
 
+        TicketReuest ticketReuest = new(auth);
+        RequestResult ticketReuestRet = await Task.Run<RequestResult>(() =>
+        {
+            return ticketReuest.Post(PrintNumCounter.GetPrintNum());
+        });
+        if (!ticketReuestRet.isValid)
+        {
+            Debug.LogError($"Failed to ticket request : {ticketReuestRet.message}");
+            return;
+        }
+
         string qrFilePath = Constants.QR_DIR_PATH + "/12345_qr.png";
         string ticketFilePath = Constants.TICKET_DIR_PATH + "/12345_ticket.png";
 
         await TicketComposer.Compose(qrFilePath, ticketFilePath);
-    
+        
         PrintRequest pr = new();
         pr.Print(ticketFilePath, PrintNumCounter.GetPrintNum(), ret =>
         {

@@ -8,7 +8,7 @@ using UnityEngine;
 
 public class Auth
 {
-    public class PostData
+    public struct PostData
     {
         public string email;
         public string password;
