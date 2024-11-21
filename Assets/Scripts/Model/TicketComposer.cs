@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using System.Drawing;
 using UnityEngine;
 
-public static class TicketComposer{
+public static class TicketComposer {
     public static async Task Compose(string scrQrFilePath, string distTicketFilePath)
     {
         await Task.Run(() =>
@@ -13,25 +13,21 @@ public static class TicketComposer{
             {
                 string baseImagePath = Constants.BASE_TICKET_PATH;
 
-                using (Bitmap baseImage = new Bitmap(baseImagePath))
-                using (Bitmap qrImage = new Bitmap(scrQrFilePath))
-                using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(baseImage))
-                {
-                    Vector2 qrImageSize = new(400, 400);
+                using Bitmap baseImage = new Bitmap(baseImagePath);
+                using Bitmap qrImage = new Bitmap(scrQrFilePath);
+                using System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(baseImage);
 
-                    g.DrawImage(
-                        qrImage,
-                        (baseImage.Width - qrImageSize.x) * 0.5f,
-                        baseImage.Height * 0.64f,
-                        qrImageSize.x,
-                        qrImageSize.y
-                    );
-                    g.Dispose();
+                Vector2 qrImageSize = new(420, 420);
 
-                    baseImage.Save(distTicketFilePath, System.Drawing.Imaging.ImageFormat.Png);
-                    baseImage.Dispose();
-                    qrImage.Dispose();
-                }
+                g.DrawImage(
+                    qrImage,
+                    (baseImage.Width - qrImageSize.x) * 0.5f,
+                    baseImage.Height * 0.64f,
+                    qrImageSize.x,
+                    qrImageSize.y
+                );
+
+                baseImage.Save(distTicketFilePath, System.Drawing.Imaging.ImageFormat.Png);
             }
             catch (Exception ex)
             {

@@ -46,7 +46,7 @@ public class SessionManager : MonoBehaviour
         });
         if (!ticketReuestRet.isValid)
         {
-            Debug.LogError($"Failed to ticket request : {ticketReuestRet.message}");
+            Common.Log($"Failed to ticket request : {ticketReuestRet.message}");
             return;
         }
 
@@ -83,7 +83,7 @@ public class SessionManager : MonoBehaviour
         PrintNumCounter.Reset();
         printNumView.SetPrintNumText(PrintNumCounter.GetPrintNum());
 
-        // Common.ClearFolder(Constants.QR_DIR_PATH);
+        Common.ClearFolder(Constants.QR_DIR_PATH);
         Common.ClearFolder(Constants.TICKET_DIR_PATH);
     }
 }

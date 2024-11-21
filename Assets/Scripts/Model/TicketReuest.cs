@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -25,7 +26,7 @@ public class TicketReuest
         this.auth = auth;
     }
 
-    public RequestResult Post(int printNum)
+    public async Task<RequestResult> Post(int printNum)
     {
         RequestResult ret = new();
         tickets = new();
@@ -52,15 +53,19 @@ public class TicketReuest
             {
                 JObject jObject = JObject.Parse(contents);
                 JToken ticketJsonObjects = jObject["tickets"];
-
                 foreach (JToken ticketJsonObject in ticketJsonObjects)
                 {
-                    Ticket ticket = new()
-                    {
-                        id = ticketJsonObject["id"].ToString(),
-                        qrUrl = ticketJsonObject["qr_url"].ToString(),
-                        createdAt = ticketJsonObject["created_at"].ToString()
-                    };
+                    Ticket ticket = new();
+                    
+                    ticket.id = ticketJsonObject["id"].ToString();
+                    ticket.base64QRString = ticketJsonObject["qr_url"].ToString();
+                    ticket.createdAt = ticketJsonObject["created_at"].ToString();
+                    ticket.qrSaveFilePath = Constants.QR_DIR_PATH + $"/{ticket.id}_qr.png";
+                    ticket.ticketSaveFilePath = Constants.TICKET_DIR_PATH + $"/{ticket.id}_ticket.png";
+
+                    await FileSaver.SaveQR(ticket.base64QRString, ticket.qrSaveFilePath);
+                    await TicketComposer.Compose(ticket.qrSaveFilePath, ticket.ticketSaveFilePath);
+
                     tickets.Add(ticket);
                 }
 

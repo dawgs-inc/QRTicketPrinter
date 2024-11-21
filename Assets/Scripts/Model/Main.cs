@@ -17,7 +17,7 @@ public class Main : MonoBehaviour
             Directory.CreateDirectory(Constants.TICKET_DIR_PATH);
         }
 
-        // Common.ClearFolder(Constants.QR_DIR_PATH);
+        Common.ClearFolder(Constants.QR_DIR_PATH);
         Common.ClearFolder(Constants.TICKET_DIR_PATH);
     }
 }
