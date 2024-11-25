@@ -9,6 +9,7 @@ using System.Linq;
 using UnityEngine;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
+using System.Net;
 
 public class TicketReuest
 {
@@ -70,6 +71,12 @@ public class TicketReuest
                 }
 
                 ret.isValid = true;
+            }
+            else if (response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                Common.Log("Network error: " + response.ReasonPhrase);
+                ret.isValid = false;
+                ret.message = response.ReasonPhrase;
             }
             else
             {

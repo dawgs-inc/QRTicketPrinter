@@ -36,34 +36,52 @@ public class Auth
         private set { this.client = value; }
     }
 
-    public async void RequestSignIn()
+    public async void RequestSignIn(Action<RequestResult> callback)
     {
+        RequestResult finalResult = new RequestResult();
+
         string endpoint = Common.tomlRoot.Get<string>("endpoint");
         string email = Common.tomlRoot.Get<string>("mail");
         string password = Common.tomlRoot.Get<string>("password");
         string appVersion = Common.tomlRoot.Get<string>("version");
 
-        RequestResult getCsrfTokenRet = await Task.Run<RequestResult>(() =>
+        try
         {
-            return GetCsrfToken(endpoint, appVersion);
-        });
+            RequestResult getCsrfTokenRet = await Task.Run<RequestResult>(() =>
+            {
+                return GetCsrfToken(endpoint, appVersion);
+            });
 
-        if (!getCsrfTokenRet.isValid)
+            if (!getCsrfTokenRet.isValid)
+            {
+                Common.Log($"Failed to retrieve CSRF token : {getCsrfTokenRet.message}");
+                callback?.Invoke(getCsrfTokenRet);
+                return;
+            }
+
+            RequestResult signInRet = await Task.Run<RequestResult>(() =>
+            {
+                return SignIn(endpoint, email, password, getCsrfTokenRet.stringValue);
+            });
+
+            if (!signInRet.isValid)
+            {
+                Common.Log($"Failed to sign in : {signInRet.message}");
+                callback?.Invoke(signInRet);
+                return;
+            }
+
+            finalResult.isValid = true;
+            finalResult.message = "Sign-in successful!";
+        }
+        catch (Exception e)
         {
-            Debug.LogError($"Failed to retrieve CSRF token : {getCsrfTokenRet.message}");
-            return;
+            Common.Log($"Unexpected error during sign-in process: {e.Message}");
+            finalResult.isValid = false;
+            finalResult.message = $"Unexpected error: {e.Message}";
         }
 
-        RequestResult signInRet = await Task.Run<RequestResult>(() =>
-        {
-            return SignIn(endpoint, email, password, getCsrfTokenRet.stringValue);
-        });
-
-        if (!signInRet.isValid)
-        {
-            Debug.LogError($"Failed to sign in : {signInRet.message}");
-            return;
-        }
+        callback?.Invoke(finalResult);
     }
 
     private RequestResult GetCsrfToken(string endpoint, string appVersion)

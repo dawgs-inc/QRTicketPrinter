@@ -15,7 +15,13 @@ public class SessionManager : MonoBehaviour
         Common.Log();
 
         auth = new();
-        auth.RequestSignIn();
+        auth.RequestSignIn(ret =>
+        {
+            if (!ret.isValid)
+            {
+                Common.Log("RequestSignIn faild!");
+            }
+        });
     }
 
     /// PrintNumView Events
@@ -47,6 +53,19 @@ public class SessionManager : MonoBehaviour
         if (!ticketReuestRet.isValid)
         {
             Common.Log($"Failed to ticket request : {ticketReuestRet.message}");
+            auth.RequestSignIn(ret =>
+            {
+                if (ret.isValid)
+                {
+                    OnClickOKButton();
+                    return;
+                }
+                else
+                {
+                    Common.Log("RequestSignIn faild!");
+                    return;
+                }
+            });
             return;
         }
         
