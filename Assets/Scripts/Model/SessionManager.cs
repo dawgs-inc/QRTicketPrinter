@@ -49,14 +49,9 @@ public class SessionManager : MonoBehaviour
             Common.Log($"Failed to ticket request : {ticketReuestRet.message}");
             return;
         }
-
-        string qrFilePath = Constants.QR_DIR_PATH + "/12345_qr.png";
-        string ticketFilePath = Constants.TICKET_DIR_PATH + "/12345_ticket.png";
-
-        await TicketComposer.Compose(qrFilePath, ticketFilePath);
         
         PrintRequest pr = new();
-        pr.Print(ticketFilePath, PrintNumCounter.GetPrintNum(), ret =>
+        pr.Print(ticketReuest.tickets, PrintNumCounter.GetPrintNum(), ret =>
         {
             if (ret.isValid)
             {
