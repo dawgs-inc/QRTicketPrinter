@@ -16,6 +16,12 @@ public class Constants
     public static readonly string CACHE_PATH = Application.temporaryCachePath;
 
     /// <summary>
+    /// プロジェクトの「Assets」フォルダのパス
+    /// </summary>
+    /// <value>Application.dataPath</value>
+    public static readonly string DATA_ASSETS_PATH = Application.dataPath;
+
+    /// <summary>
     /// tomlファイル（設定ファイル）のパス
     /// </summary>
     /// <value></value>
@@ -38,4 +44,10 @@ public class Constants
     /// </summary>
     /// <value></value>
     public static readonly string TICKET_DIR_PATH = Path.Combine(CACHE_PATH, "ticket");
+
+    /// <summary>
+    /// フォントファイルのパス
+    /// </summary>
+    /// <value></value>
+    public static readonly string FONT_FILE_PATH = Path.Combine(DATA_ASSETS_PATH, "Resources", "Fonts", "NotoSansJP-Medium.ttf");
 }

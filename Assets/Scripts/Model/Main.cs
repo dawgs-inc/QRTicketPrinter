@@ -5,7 +5,7 @@ public class Main : MonoBehaviour
 {
     void Awake()
     {
-        Common.Log(Application.temporaryCachePath);
+        Common.Log();
 
         if (!Directory.Exists(Constants.QR_DIR_PATH))
         {
