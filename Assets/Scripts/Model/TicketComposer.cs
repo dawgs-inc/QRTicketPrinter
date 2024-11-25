@@ -5,7 +5,7 @@ using System.Drawing;
 using UnityEngine;
 
 public static class TicketComposer {
-    public static async Task Compose(string scrQrFilePath, string distTicketFilePath, string unixTimeStamp)
+    public static async Task Compose(string scrQrFilePath, string distTicketFilePath, Ticket ticket)
     {
         await Task.Run(() =>
         {
@@ -22,22 +22,41 @@ public static class TicketComposer {
                 var fontFamilies = collection.Families;
                 var font = new System.Drawing.Font(fontFamilies[0], 18);
 
-                DateTime dateTime = DateTimeOffset.FromUnixTimeSeconds(long.Parse(unixTimeStamp)).LocalDateTime;
+                DateTime dateTime = DateTimeOffset.FromUnixTimeSeconds(long.Parse(ticket.createdAt)).LocalDateTime;
+                string dateText = $"撮影可能日 : {dateTime.Year}/{dateTime.Month}/{dateTime.Day}";
+                SizeF dateTextSize = g.MeasureString(dateText, font);
+                string idText = $"ID : {ticket.id}";
+                SizeF idTextSize = g.MeasureString(idText, font);
 
                 g.DrawString(
-                    $"撮影可能日：{dateTime.Year.ToString()}/{dateTime.Month.ToString()}/{dateTime.Day.ToString()}",
+                    dateText,
                     font,
                     Brushes.Black,
-                    170,
-                    250
+                    (baseImage.Width - dateTextSize.Width) * 0.5f,
+                    baseImage.Height * 0.15f
                 );
 
-                Vector2 qrImageSize = new(500, 500);
+                g.DrawString(
+                    idText,
+                    font,
+                    Brushes.Black,
+                    (baseImage.Width - idTextSize.Width) * 0.5f,
+                    baseImage.Height * 0.77f
+                );
+
+                Rectangle cropArea = new Rectangle(
+                    (int)((qrImage.Width - qrImage.Width * 0.8f) * 0.5),
+                    (int)((qrImage.Height - qrImage.Height * 0.8f) * 0.5),
+                    (int)(qrImage.Width * 0.8f),
+                    (int)(qrImage.Height * 0.8f)
+                );
+                using Bitmap cropQrImage = qrImage.Clone(cropArea, qrImage.PixelFormat);
+                Vector2 qrImageSize = new(430, 430);
 
                 g.DrawImage(
-                    qrImage,
+                    cropQrImage,
                     (baseImage.Width - qrImageSize.x) * 0.5f,
-                    baseImage.Height * 0.5f,
+                    baseImage.Height * 0.505f,
                     qrImageSize.x,
                     qrImageSize.y
                 );

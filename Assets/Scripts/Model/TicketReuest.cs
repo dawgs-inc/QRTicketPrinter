@@ -64,7 +64,7 @@ public class TicketReuest
                     ticket.ticketSaveFilePath = Constants.TICKET_DIR_PATH + $"/{ticket.id}_ticket.png";
 
                     await FileSaver.SaveQR(ticket.base64QRString, ticket.qrSaveFilePath);
-                    await TicketComposer.Compose(ticket.qrSaveFilePath, ticket.ticketSaveFilePath, ticket.createdAt);
+                    await TicketComposer.Compose(ticket.qrSaveFilePath, ticket.ticketSaveFilePath, ticket);
 
                     tickets.Add(ticket);
                 }
