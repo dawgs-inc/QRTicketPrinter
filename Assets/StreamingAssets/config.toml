@@ -1,4 +1,4 @@
-endpoint = "https://jyp-mirrorsnap-pro-dev.mirrorsnap.net"
+endpoint = "https://jyp-mirrorsnap-pro-prod.mirrorsnap.net"
 mail = "jyp_popup@generosity.co.jp"
 password = "jyp_2024"
 version = "1.0.0"
