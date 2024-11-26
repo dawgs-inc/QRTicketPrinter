@@ -10,7 +10,7 @@ public static class Common
     /// 設定ファイルのオブジェクト
     /// </summary>
     /// <value></value>
-    public static TomlTable tomlRoot {get; private set;} = Toml.ReadFile(Constants.TOML_FILE_PATH);
+    public static TomlTable tomlRoot { get => Toml.ReadFile(Constants.TOML_FILE_PATH); }
 
     /// <summary>
     /// <para>呼び出し元のクラス名、 メソッド名をログ出力</para>

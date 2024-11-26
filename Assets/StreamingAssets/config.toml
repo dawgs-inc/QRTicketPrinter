@@ -1,4 +1,21 @@
+# Auth
+
 endpoint = "https://jyp-mirrorsnap-pro-prod.mirrorsnap.net"
 mail = "jyp_popup@generosity.co.jp"
 password = "jyp_2024"
 version = "1.0.0"
+
+# Ticket
+
+# Date Text
+date_font_size = 20.0
+date_py_scale = 0.05
+
+# ID Text
+id_font_size = 20.0
+id_py_scale = 0.73
+
+# QR Image
+qr_size = 440.0
+qr_py_scale = 0.455
+qr_crop_scale = 0.8
