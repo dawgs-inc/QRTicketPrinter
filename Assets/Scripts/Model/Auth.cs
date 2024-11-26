@@ -45,87 +45,64 @@ public class Auth
         string password = Common.tomlRoot.Get<string>("password");
         string appVersion = Common.tomlRoot.Get<string>("version");
 
-        try
+        RequestResult signInRet = await Task.Run<RequestResult>(() =>
         {
-            RequestResult getCsrfTokenRet = await Task.Run<RequestResult>(() =>
-            {
-                return GetCsrfToken(endpoint, appVersion);
-            });
+            return SignIn(endpoint, email, password);
+        });
 
-            if (!getCsrfTokenRet.isValid)
-            {
-                Common.Log($"Failed to retrieve CSRF token : {getCsrfTokenRet.message}");
-                callback?.Invoke(getCsrfTokenRet);
-                return;
-            }
-
-            RequestResult signInRet = await Task.Run<RequestResult>(() =>
-            {
-                return SignIn(endpoint, email, password, getCsrfTokenRet.stringValue);
-            });
-
-            if (!signInRet.isValid)
-            {
-                Common.Log($"Failed to sign in : {signInRet.message}");
-                callback?.Invoke(signInRet);
-                return;
-            }
-
-            finalResult.isValid = true;
-            finalResult.message = "Sign-in successful!";
-        }
-        catch (Exception e)
+        if (!signInRet.isValid)
         {
-            Common.Log($"Unexpected error during sign-in process: {e.Message}");
-            finalResult.isValid = false;
-            finalResult.message = $"Unexpected error: {e.Message}";
+            Common.Log($"Failed to sign in : {signInRet.message}");
+            callback?.Invoke(signInRet);
+            return;
         }
 
+        finalResult.isValid = true;
         callback?.Invoke(finalResult);
     }
 
-    private RequestResult GetCsrfToken(string endpoint, string appVersion)
-    {
-        RequestResult ret = new RequestResult();
+    // private RequestResult GetCsrfToken(string endpoint, string appVersion)
+    // {
+    //     RequestResult ret = new RequestResult();
 
-        string url = endpoint + "/client";
-        httpClient.DefaultRequestHeaders.Clear();
-        httpClient.DefaultRequestHeaders.Add("version", appVersion);
+    //     string url = endpoint + "/client";
+    //     httpClient.DefaultRequestHeaders.Clear();
+    //     httpClient.DefaultRequestHeaders.Add("version", appVersion);
 
-        try
-        {
-            HttpResponseMessage response = httpClient.GetAsync(url).Result;
+    //     try
+    //     {
+    //         HttpResponseMessage response = httpClient.GetAsync(url).Result;
 
-            if (response.IsSuccessStatusCode)
-            {
-                string responseBody = response.Content.ReadAsStringAsync().Result;
+    //         if (response.IsSuccessStatusCode)
+    //         {
+    //             string responseBody = response.Content.ReadAsStringAsync().Result;
 
-                Match matchedTag = Regex.Match(responseBody, "<meta name=\"csrf-token.+>");
-                Match matchedKV = Regex.Match(matchedTag.Value, "content=\".+\"");
-                string csrfToken = matchedKV.Value.Replace("content=", "").Replace("\"", "");
+    //             Match matchedTag = Regex.Match(responseBody, "<meta name=\"csrf-token.+>");
+    //             Match matchedKV = Regex.Match(matchedTag.Value, "content=\".+\"");
+    //             string csrfToken = matchedKV.Value.Replace("content=", "").Replace("\"", "");
 
-                Common.Log("CSRF Token: " + csrfToken);
-                ret.isValid = true;
-                ret.stringValue = csrfToken;
-            }
-            else
-            {
-                Debug.LogError("Network error: " + response.ReasonPhrase);
-                ret.isValid = false;
-                ret.message = response.ReasonPhrase;
-            }
-        }
-        catch (HttpRequestException e)
-        {
-            Debug.LogError("Request exception: " + e.Message);
-            ret.isValid = false;
-            ret.message = e.Message;
-        }
+    //             Common.Log("CSRF Token: " + csrfToken);
+    //             ret.isValid = true;
+    //             ret.stringValue = csrfToken;
+    //         }
+    //         else
+    //         {
+    //             Common.Log("Request error: " + response.ReasonPhrase);
+    //             ret.isValid = false;
+    //             ret.message = response.ReasonPhrase;
+    //         }
+    //     }
+    //     catch (Exception e)
+    //     {
+    //         Common.Log("Request exception: " + e.Message);
+    //         ret.isValid = false;
+    //         ret.message = e.Message;
+    //     }
 
-        return ret;
-    }
+    //     return ret;
+    // }
 
-    private RequestResult SignIn(string endpoint, string email, string password, string csrfToken)
+    private RequestResult SignIn(string endpoint, string email, string password)
     {
         RequestResult ret = new RequestResult();
 
@@ -136,7 +113,6 @@ public class Auth
         StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
 
         httpClient.DefaultRequestHeaders.Clear();
-        httpClient.DefaultRequestHeaders.Add("X-CSRF-TOKEN", csrfToken);
 
         try
         {
@@ -156,14 +132,14 @@ public class Auth
             }
             else
             {
-                Debug.LogError("Network error: " + response.ReasonPhrase);
+                Common.Log("Request error: " + response.ReasonPhrase);
                 ret.isValid = false;
                 ret.message = response.ReasonPhrase;
             }
         }
-        catch (HttpRequestException e)
+        catch (Exception e)
         {
-            Debug.LogError("Request exception: " + e.Message);
+            Common.Log("Request exception: " + e.Message);
             ret.isValid = false;
             ret.message = e.Message;
         }
