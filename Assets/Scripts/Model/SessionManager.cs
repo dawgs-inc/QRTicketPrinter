@@ -1,3 +1,4 @@
+using System.Net;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -19,7 +20,7 @@ public class SessionManager : MonoBehaviour
         {
             if (!ret.isValid)
             {
-                Common.Log("RequestSignIn faild!");
+                Common.Log("SignIn request faild!");
             }
         });
     }
@@ -50,22 +51,26 @@ public class SessionManager : MonoBehaviour
         {
             return ticketReuest.Post(PrintNumCounter.GetPrintNum());
         });
+
         if (!ticketReuestRet.isValid)
         {
             Common.Log($"Failed to ticket request : {ticketReuestRet.message}");
-            auth.RequestSignIn(ret =>
+
+            if (ticketReuestRet.statusCode == HttpStatusCode.Unauthorized)
             {
-                if (ret.isValid)
+                auth.RequestSignIn(ret =>
                 {
-                    OnClickOKButton();
-                    return;
-                }
-                else
-                {
-                    Common.Log("RequestSignIn faild!");
-                    return;
-                }
-            });
+                    if (ret.isValid)
+                    {
+                        OnClickOKButton();
+                    }
+                    else
+                    {
+                        Common.Log("SignIn request faild!");
+                    }
+                });
+            }
+
             return;
         }
         
@@ -74,12 +79,12 @@ public class SessionManager : MonoBehaviour
         {
             if (ret.isValid)
             {
-                Common.Log("succeed!");
+                Common.Log("print succeed!");
                 Invoke("PrintSucceeded", 2);
             }
             else
             {
-                Common.Log("faild!");
+                Common.Log("print faild!");
             }
         });
     }

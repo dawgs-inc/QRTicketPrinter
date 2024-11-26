@@ -118,6 +118,8 @@ public class Auth
         {
             HttpResponseMessage response = httpClient.PostAsync(url, content).Result;
 
+            ret.statusCode = response.StatusCode;
+
             if (response.IsSuccessStatusCode)
             {
                 AccessToken = response.Headers.Contains("access-token") ? response.Headers.GetValues("access-token").FirstOrDefault() : null;

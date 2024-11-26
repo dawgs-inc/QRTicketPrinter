@@ -50,6 +50,8 @@ public class TicketReuest
             HttpResponseMessage response = httpClient.PostAsync(url, content).Result;
             string contents = response.Content.ReadAsStringAsync().Result;
 
+            ret.statusCode = response.StatusCode;
+
             if (response.IsSuccessStatusCode)
             {
                 JObject jObject = JObject.Parse(contents);
@@ -72,28 +74,16 @@ public class TicketReuest
 
                 ret.isValid = true;
             }
-            else if (response.StatusCode == HttpStatusCode.Unauthorized)
-            {
-                Common.Log("Network error: " + response.ReasonPhrase);
-                ret.isValid = false;
-                ret.message = response.ReasonPhrase;
-            }
             else
             {
-                Debug.LogError("Network error: " + response.ReasonPhrase);
+                Common.Log("Request error: " + response.ReasonPhrase);
                 ret.isValid = false;
                 ret.message = response.ReasonPhrase;
             }
-        }
-        catch (HttpRequestException e)
-        {
-            Debug.LogError("Http request exception: " + e.Message);
-            ret.isValid = false;
-            ret.message = e.Message;
         }
         catch (Exception e)
         {
-            Debug.LogError("Request exception: " + e.Message);
+            Common.Log("Request exception: " + e.Message);
             ret.isValid = false;
             ret.message = e.Message;
         }
