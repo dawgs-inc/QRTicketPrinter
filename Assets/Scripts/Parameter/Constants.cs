@@ -49,5 +49,5 @@ public class Constants
     /// フォントファイルのパス
     /// </summary>
     /// <value></value>
-    public static readonly string FONT_FILE_PATH = Path.Combine(DATA_ASSETS_PATH, "Resources", "Fonts", "NotoSansJP-Medium.ttf");
+    public static readonly string FONT_FILE_PATH = Path.Combine(STREAMING_ASSETS_PATH, "NotoSansJP-Medium.ttf");
 }
