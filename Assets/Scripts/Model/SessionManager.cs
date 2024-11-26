@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Net;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -8,7 +9,7 @@ public class SessionManager : MonoBehaviour
     private PrintNumView printNumView;
 
     [SerializeField]
-    private GameObject resultView;
+    private ResultView resultView;
     private Auth auth;
 
     void Awake()
@@ -67,10 +68,12 @@ public class SessionManager : MonoBehaviour
                     else
                     {
                         Common.Log("SignIn request faild!");
+                        StartCoroutine(PrintFailed(2.0f, ret));
                     }
                 });
             }
 
+            StartCoroutine(PrintFailed(2.0f, ticketReuestRet));
             return;
         }
         
@@ -80,18 +83,30 @@ public class SessionManager : MonoBehaviour
             if (ret.isValid)
             {
                 Common.Log("print succeed!");
-                Invoke("PrintSucceeded", 2);
+                StartCoroutine(PrintSucceeded(2.0f));
             }
             else
             {
                 Common.Log("print faild!");
+                StartCoroutine(PrintFailed(2.0f, ret));
             }
         });
     }
 
-    private void PrintSucceeded()
+    IEnumerator PrintSucceeded(float delay)
     {
-        this.GetComponent<FadeTransition>().StartFadeTransition(resultView);
+        yield return new WaitForSeconds(delay);
+
+        resultView.SetResultText($"印刷が完了しました");
+        GetComponent<FadeTransition>().StartFadeTransition(resultView.gameObject);
+    }
+
+    IEnumerator PrintFailed(float delay, RequestResult ret)
+    {
+        yield return new WaitForSeconds(delay);
+
+        resultView.SetResultText($"印刷に失敗しました\n{(int)ret.statusCode} : {ret.message}");
+        GetComponent<FadeTransition>().StartFadeTransition(resultView.gameObject);
     }
 
     /// ResultView Events
