@@ -70,7 +70,7 @@ public class SessionManager : MonoBehaviour
         }
         
         PrintRequest pr = new();
-        pr.Print(ticketReuest.tickets, PrintNumCounter.GetPrintNum(), ret =>
+        await pr.Print(ticketReuest.tickets, PrintNumCounter.GetPrintNum(), ret =>
         {
             if (ret.isValid)
             {

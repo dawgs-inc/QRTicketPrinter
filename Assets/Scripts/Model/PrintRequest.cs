@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Drawing;
 using UnityEngine;
@@ -6,7 +7,7 @@ using UnityEngine;
 public class PrintRequest
 {
 
-    public void Print(List<Ticket> tickets, int printNum, Action<RequestResult> callback)
+    public async Task Print(List<Ticket> tickets, int printNum, Action<RequestResult> callback)
     {
         var ret = new RequestResult();
 
@@ -14,45 +15,48 @@ public class PrintRequest
         {
             try
             {
-
-                System.Drawing.Printing.PrintDocument printDocument = new();
-                printDocument.PrintPage += (sender, e) =>
+                await Task.Run(() =>
                 {
-                    try
+                    System.Drawing.Printing.PrintDocument printDocument = new();
+                    printDocument.PrintPage += (sender, e) =>
                     {
-                        using (Image img = Image.FromFile(tickets[i].ticketSaveFilePath))
+                        try
                         {
-                            float zoom = 1;
-                            if (img.Width > e.Graphics.VisibleClipBounds.Width)
+                            using (Image img = Image.FromFile(tickets[i].ticketSaveFilePath))
                             {
-                                zoom = e.Graphics.VisibleClipBounds.Width / img.Width;
+                                float zoom = 1;
+                                if (img.Width > e.Graphics.VisibleClipBounds.Width)
+                                {
+                                    zoom = e.Graphics.VisibleClipBounds.Width / img.Width;
+                                }
+                                if (img.Height * zoom > e.Graphics.VisibleClipBounds.Height)
+                                {
+                                    zoom = e.Graphics.VisibleClipBounds.Height / img.Height;
+                                }
+                                e.Graphics.DrawImage(img, 0, 0, img.Width * zoom, img.Height * zoom);
+                                e.HasMorePages = false;
                             }
-                            if (img.Height * zoom > e.Graphics.VisibleClipBounds.Height)
-                            {
-                                zoom = e.Graphics.VisibleClipBounds.Height / img.Height;
-                            }
-                            e.Graphics.DrawImage(img, 0, 0, img.Width * zoom, img.Height * zoom);
-                            e.HasMorePages = false;
                         }
-                    }
-                    catch (Exception ex)
+                        catch (Exception ex)
+                        {
+                            ret.isValid = false;
+                            ret.message = ex.Message;
+                            throw;
+                        }
+                    };
+
+                    string printerName = GetDefaultPrinter();
+                    if (string.IsNullOrEmpty(printerName))
                     {
                         ret.isValid = false;
-                        ret.message = ex.Message;
+                        ret.message = "プリンターが見つかりません。";
+                        throw new InvalidOperationException(ret.message);
                     }
-                };
 
-                string printerName = GetDefaultPrinter();
-                if (string.IsNullOrEmpty(printerName))
-                {
-                    ret.isValid = false;
-                    ret.message = "プリンターが見つかりません。";
-                    throw new InvalidOperationException(ret.message);
-                }
+                    printDocument.PrinterSettings.PrinterName = printerName;
 
-                printDocument.PrinterSettings.PrinterName = printerName;
-
-                printDocument.Print();
+                    printDocument.Print();
+                });
 
                 ret.isValid = true;
                 ret.message = "印刷が完了しました。";
